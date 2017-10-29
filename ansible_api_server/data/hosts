@@ -1,0 +1,7 @@
+[local]
+127.0.0.1
+10.216.155.55 ansible_connection=smart ansible_ssh_user=root
+10.216.155.56 ansible_connection=smart ansible_ssh_user=root
+
+[kubernetes_master]
+10.216.155.55 ansible_connection=smart ansible_ssh_user=root

@@ -1,0 +1,131 @@
+- hosts: all
+  vars:
+    vdc: ecf25ac6-8500-445c-91f6-ad955f73f3a4
+    vim_zone: myVzId
+    vendor: Ericsson
+    version: "1.0"
+
+  tasks:
+
+    - name: Deploy vapp (HOT package based. 1 VM connected to a network)
+      ecm_vapp:
+        name: "vapp2"
+        vnfd_id: f41531d4-cb80-4578-8665-268a69f188ea
+        vdc:  "{{vdc}}"
+        vim_zone: "myVzId"
+        description: "vapp deployed via custom ECM ansible module"
+        vendor: "Ericsson"
+        version: "1.0"
+        parameters: {
+            image_id_core: 6f326ccc-4c30-41ce-b742-c42e27fe3d03,
+            ip_addr: 30.30.0.31,
+            network_id: pattabi_network_1,
+            subnet_id: pattabi_subnet_1
+        }
+        state: active
+        timeout: 60
+      register: vapp2
+
+    - debug: var=vapp2
+
+    - name: Create VAPP Connection Point (CP to the VAPP created in the previous step)
+      ecm_cp:
+        name: "vapp2_cp1"
+        type: OAM
+        description: "VAPP Connection Point"
+        address: "1.1.1.1"
+        address_type: subnet
+        vapp_id: "{{ vapp2.id }}"
+        state: active
+      register: vapp2_cp1
+
+    - debug: var=vapp2_cp1
+
+    - name: Create Service (with the VAPP created in the previous step and 1 Service CP)
+      ecm_service:
+        name: "service2"
+        type: "Simple Demo Service"
+        description: "Demo Service"
+        vendor: Ericsson
+        version: 1.0
+        vdc:  "{{vdc}}"
+        vapps: [ "{{ vapp2.id }}" ]
+        cps: [
+          {
+              "name": "service2_cp1",
+              "type": "OAM",
+              "description": "service connection point",
+              "address": "2.2.2.2",
+              "addressType": "subnet"
+          }
+        ]
+        state: active
+      register: service2
+
+    - debug: var=service2
+
+    - name: Create Service Connection Point (Adding another CP to the service created in the previous step)
+      ecm_cp:
+        name: "service2_cp2"
+        type: OAM
+        description: "VAPP Connection Point"
+        address: "1.1.1.1"
+        address_type: subnet
+        service_id: "{{ service2.id }}"
+        state: active
+      register: service2_cp2
+
+    - debug: var=service2_cp2
+
+
+    - name: Create Virtual Link (1 VAPP CP and 1 Service CP)
+      ecm_vlink:
+        name: "service2_vlink1"
+        type: Layer3
+        description: "virtual link"
+        vendor: Ericsson
+        version: 1.0
+        service_id: "{{ service2.id }}"
+        cps: [
+          "{{ vapp2_cp1.id }}",
+          "{{ service2_cp2.id }}"
+        ]
+        provider_vl_id: demo
+        state: active
+      register: service2_vlink1
+
+    - debug: var=service2_vlink1
+
+    - pause:
+          seconds: 30
+          prompt: "About to clean up the configuration ..."
+
+    - name: Delete Virtual Link
+      ecm_vlink:
+        id: "{{service2_vlink1.id}}"
+        state: deleted
+      register: result
+      tags:
+        - vlink
+
+    - debug: var=result
+
+    - name: Delete Service
+      ecm_service:
+        id: "{{service2.id}}"
+        state: deleted
+      register: result
+      tags:
+        - service
+
+    - debug: var=result
+
+    - name: Delete vapp
+      ecm_vapp:
+        id: "{{vapp2.id}}"
+        state: deleted
+      register: result
+      tags:
+        - vapp
+
+    - debug: var=result

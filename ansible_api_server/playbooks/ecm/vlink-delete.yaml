@@ -1,0 +1,11 @@
+- hosts: local
+  connection: local
+  tasks:
+
+    - name: Delete Virtual Link
+      ecm_vlink:
+        id: "8d97768d-51be-48ef-95f5-51f3c5201a0d"
+        state: deleted
+      register: result
+
+    - debug: var=result

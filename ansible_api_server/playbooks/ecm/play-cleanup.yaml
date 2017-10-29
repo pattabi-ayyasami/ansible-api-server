@@ -1,0 +1,33 @@
+- hosts: local
+  connection: local
+  tasks:
+
+    - name: Delete Virtual Link
+      ecm_vlink:
+        id: "7a570b41-5a10-4aba-a1fc-31941397d152"
+        state: deleted
+      register: result
+      tags:
+        - vlink
+
+#    - debug: var=result
+
+    - name: Delete Service
+      ecm_service:
+        id: "edf7858a-9a10-4dd9-a233-5362ad15ef0c"
+        state: deleted
+      register: result
+      tags:
+        - service
+
+    - debug: var=result
+
+    - name: Delete vapp
+      ecm_vapp:
+        id: "74578878-f3f0-42d8-bfed-7fb81eae183e"
+        state: deleted
+      register: result
+      tags:
+        - vapp
+
+    - debug: var=result

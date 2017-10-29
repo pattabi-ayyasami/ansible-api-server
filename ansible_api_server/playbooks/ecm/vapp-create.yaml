@@ -1,0 +1,23 @@
+- hosts: local
+  connection: local
+  tasks:
+
+    - name: Deploy vapp
+      ecm_vapp:
+        name: "vapp-3"
+        vnfd_id: f41531d4-cb80-4578-8665-268a69f188ea
+        vdc: ecf25ac6-8500-445c-91f6-ad955f73f3a4
+        vim_zone: "myVzId"
+        description: "vapp deployed via custom ECM ansible module"
+        vendor: "Ericsson"
+        version: "1.0"
+        parameters: {
+            image_id_core: 6f326ccc-4c30-41ce-b742-c42e27fe3d03,
+            ip_addr: 30.30.0.31,
+            network_id: pattabi_network_1,
+            subnet_id: pattabi_subnet_1
+        }
+        state: active
+      register: result
+
+    - debug: var=result

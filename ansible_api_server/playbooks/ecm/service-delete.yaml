@@ -1,0 +1,11 @@
+- hosts: local
+  connection: local
+  tasks:
+
+    - name: Delete Service
+      ecm_service:
+        id: "7292851b-01cf-4472-ab9f-ec81ef6d6755"
+        state: deleted
+      register: result
+
+    - debug: var=result

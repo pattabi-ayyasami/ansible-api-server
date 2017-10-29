@@ -1,0 +1,26 @@
+- hosts: local
+  connection: local
+  tasks:
+
+    - name: Create Service
+      ecm_service:
+        name: "test-service-1"
+        type: "Simple Demo Service"
+        description: "Demo Service"
+        vendor: Ericsson
+        version: 1.0
+        vdc: ecf25ac6-8500-445c-91f6-ad955f73f3a4
+#        vapps: [ "916d32b0-46ba-49ee-bc04-2ced0fa046be" ]
+        cps: [
+          {
+              "name": "service-cp-3",
+              "type": "OAM",
+              "description": "service connection point",
+              "address": "2.2.2.2",
+              "addressType": "subnet"
+          }
+        ]
+        state: active
+      register: result
+
+    - debug: var=result

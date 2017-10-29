@@ -1,0 +1,18 @@
+- hosts: local
+  connection: local
+  tasks:
+
+    - name: Create Service Connection Point
+      ecm_cp:
+        name: "service-cp-3"
+        type: OAM
+        description: "VAPP Connection Point"
+        address: "1.1.1.1"
+        address_type: subnet
+        service_id: a16582f3-2120-4088-991f-bde6d6c80164
+        wait_for_completion: yes
+        timeout: 300
+        state: active
+      register: result
+
+    - debug: var=result

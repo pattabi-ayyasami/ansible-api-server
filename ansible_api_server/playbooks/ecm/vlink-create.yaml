@@ -1,0 +1,24 @@
+- hosts: local
+  connection: local
+  tasks:
+
+    - name: Create Virtual Link
+      ecm_vlink:
+        name: "vlink-2"
+        type: Layer3
+        description: "virtual link"
+        vendor: Ericsson
+        version: 1.0
+        service_id: a16582f3-2120-4088-991f-bde6d6c80164
+        cps: [ 
+           "9f3c8e70-8779-44ea-adc8-ac09e3721d40"
+#          "1be4008a-f510-42cb-aaea-fbb55a21b331",
+#          "a38f5035-65f6-473f-8ee3-518c1ee62cef"
+        ]
+        provider_vl_id: demo
+        wait_for_completion: yes
+        timeout: 300
+        state: active
+      register: result
+
+    - debug: var=result

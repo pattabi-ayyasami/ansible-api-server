@@ -1,0 +1,11 @@
+- hosts: local
+  connection: local
+  tasks:
+
+    - name: Delete vapp
+      ecm_vapp:
+        id: "31c68002-515d-46cf-8b33-651385b7836c"
+        state: deleted
+      register: result
+
+    - debug: var=result
